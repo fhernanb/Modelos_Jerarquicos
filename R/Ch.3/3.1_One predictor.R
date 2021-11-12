@@ -2,12 +2,12 @@
 # Archivo modificado a partir del original -------------------------------------
 # ------------------------------------------------------------------------------
 
-library("arm")
 library(haven)
-
 kidiq <- read_dta("Datos/child.iq/kidiq.dta")
 
-# attach(kidiq) # Oculte el attach porque NO ME GUSTA
+# Para explorar los datos
+library(pillar)
+glimpse(kidiq)
 
 ## Plot Figure 3.1
 library(ggplot2)
