@@ -4,12 +4,40 @@
 # The R codes & data files should be saved in the same directory for
 # the source command to work
 
+library(dplyr)
+library(haven)
+library(arm)
+
+file <- "https://raw.githubusercontent.com/fhernanb/Modelos_Jerarquicos/main/Datos/nes/nes5200_processed_voters_realideo.dta"
+datos <- read_dta(file)
+
+# Creando el subconjunto
+sub_datos <- datos %>% filter(year == 1994, presvote < 3)
+
+# Modificando la variable vote segun las indicaciones de los autores
+sub_datos$vote <- sub_datos$presvote - 1
+
+# Explorando la variable respuesta Y
+sub_datos %>% dplyr::select(vote) %>% table()
+
+# Ajustando el modelo
+fit.1 <- glm (vote ~ income, family=binomial(link="logit"), data=sub_datos)
+display(fit.1)
+
+
+
+
+
+
+
+# Abajo el codigo original
+
 source("4.7_Fitting a series of regressions.R") # where data was cleaned; set the directory to be where this file is
 
 yr <- 1992
-  ok <- nes.year==yr & presvote<3
-  vote <- presvote[ok] - 1
-  income <- data$income[ok]
+ok <- nes.year==yr & presvote<3
+vote <- presvote[ok] - 1
+income <- data$income[ok]
 
  # Estimation
 fit.1 <- glm (vote ~ income, family=binomial(link="logit"))
