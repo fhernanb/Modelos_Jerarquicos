@@ -1,16 +1,29 @@
-## Read & clean the data
-# get radon data
-# Data are at http://www.stat.columbia.edu/~gelman/arm/examples/radon
+# ------------------------------------------------------------------------------
+# Archivo modificado a partir del original -------------------------------------
+# ------------------------------------------------------------------------------
+
+# El código de abajo permite leer los datos en bruto sobre Radon 
+# y extraer la parte de Minnesota:
+
+# The library
 library ("arm")
 
-srrs2 <- read.table ("srrs2.dat", header=T, sep=",")
-mn <- srrs2$state=="MN"
+# To read the dataset
+srrs2 <- read.table ("Datos/radon/srrs2.dat", header=TRUE, sep=",")
+
+# To use only the Minnesota state
+mn <- srrs2$state == "MN"
 radon <- srrs2$activity[mn]
-log.radon <- log (ifelse (radon==0, .1, radon))
-floor <- srrs2$floor[mn]       # 0 for basement, 1 for first floor
+log.radon <- log(ifelse(radon == 0, 0.1, radon)) # To avoid 3 radon wit zero value
+floor <- srrs2$floor[mn] # 0 for basement, 1 for first floor
 n <- length(radon)
 y <- log.radon
 x <- floor
+
+# Vamos a explorar la relacion entre y e x
+par(mfrow=c(1, 2))
+boxplot(radon ~ x)
+boxplot(y ~ x)
 
 # get county index variable
 county.name <- as.vector(srrs2$county[mn])
@@ -21,8 +34,13 @@ for (i in 1:J){
   county[county.name==uniq[i]] <- i
 }
 
- # no predictors
-ybarbar = mean(y)
+# Model 1: no predictors
+ybarbar <- mean(y)
+ybarbar
+
+# otra forma para crear el modelo 1
+mod1 <- lm(y ~ 1)
+coef(mod1)
 
 sample.size <- as.vector (table (county))
 sample.size.jittered <- sample.size*exp (runif (J, -.1, .1))
@@ -31,7 +49,7 @@ cty.vars = tapply(y,county,var)
 cty.sds = mean(sqrt(cty.vars[!is.na(cty.vars)]))/sqrt(sample.size)
 cty.sds.sep = sqrt(tapply(y,county,var)/sample.size)
 
- # varying-intercept model, no predictors
+# varying-intercept model, no predictors
 
 radon.data <- list ("n", "J", "y", "county")
 radon.inits <- function (){

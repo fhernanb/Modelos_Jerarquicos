@@ -5,7 +5,7 @@
 # Ejemplo sobre votaciones
 
 library (foreign)
-url <- 'Datos/death.polls/polls.dta'
+url <- 'Datos/election88/polls.dta'
 datos <- read.dta(file=url)
 
 # Usando la inf del survey = 9158
